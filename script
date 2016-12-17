@@ -40,7 +40,7 @@ end
 def showError()
   puts "\nYou need argument.\n".red
   puts "[options]"
-  OPTIONS.each {|option| puts "- #{option[0]}"}
+  OPTIONS.merge("edit" => "").each {|option| puts "- #{option[0]}"}
 end
 
 def apply(condition, trueFunc, trueValues, falseFunc, falseValues)
@@ -52,9 +52,7 @@ def quit(function_call)
 end
 
 def edit()
-  if ARGV[0] == "edit"
-    system "vim /usr/local/etc/clisim/config" 
-  end
+  ARGV[0] == "edit" ? system("vim /usr/local/etc/clisim/config") : showError()
 end
 
 config = readConfig CONFIG
