@@ -2,9 +2,9 @@
 
 require 'colorize'
 
-ROOT_URL="https://api.omise.co"
-SKEY = %w(-u "skey_test_55xm609p758d1qscz38:")
+SKEY = %w(-u SKEY)
 POST = %w(-X POST)
+CONFIG = "/usr/local/etc/clisim/config"
 
 OPTIONS = {
   "ltran" => ["transfers", SKEY],
@@ -15,12 +15,25 @@ def transfer(url, options=[])
   curl "transfers", options, url
 end
 
-def curl(options, url)
-  system disp "curl "+ options[1].inject("#{url}/#{options[0]} ") {|k, v| "#{k}#{v} " }
+def to_map(array, map={})
+  array.each {|x, y| map[x] = y.chomp }
+  map
+end
+
+def readConfig(config)
+  to_map File.open(config, "r").map { |line| line.split("=") }
+end
+
+def replace(value, config)
+  config.has_key?(value) ? value.gsub(value, config[value]) : value
+end
+
+def curl(opt, url, config)
+  system disp "curl "+ opt[1].inject("#{url}/#{opt[0]} ") {|k, v| "#{k}#{replace(v, config)} " }
 end
 
 def disp(command)
-  puts command.green
+  puts command.to_s.green
   command
 end
 
@@ -34,8 +47,10 @@ def apply(condition, trueFunc, trueValues, falseFunc, falseValues)
    condition ? trueFunc.call(*trueValues) : falseFunc.call(*falseValues)
 end
 
+config = readConfig CONFIG
+
 apply(OPTIONS.keys.include?(ARGV[0]), 
-      lambda = -> (x, y) { curl(x, y) }, [OPTIONS[ARGV[0]], ROOT_URL],
-      lambda = -> () {showError()}, [])
+  lambda = -> (x, y, c) { curl(x, y, c) }, [OPTIONS[ARGV[0]], config["ROOT_URL"], config],
+  lambda = -> () {showError()}, [])
 
 
