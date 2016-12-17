@@ -11,6 +11,16 @@ OPTIONS = {
   "ctran" => ["transfers", SKEY + POST + %w(-d "amount=300")]
 }
 
+# :
+def highlight(head, tail)
+  print head.yellow
+  puts tail.cyan
+end
+
+def highlight(line)
+  highlight(*line.split)
+end
+
 def transfer(url, options=[])
   curl "transfers", options, url
 end
