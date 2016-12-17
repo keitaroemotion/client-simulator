@@ -47,7 +47,19 @@ def apply(condition, trueFunc, trueValues, falseFunc, falseValues)
    condition ? trueFunc.call(*trueValues) : falseFunc.call(*falseValues)
 end
 
+def quit(function_call)
+  abort
+end
+
+def edit()
+  if ARGV[0] == "edit"
+    system "vim /usr/local/etc/clisim/config" 
+  end
+end
+
 config = readConfig CONFIG
+
+quit edit
 
 apply(OPTIONS.keys.include?(ARGV[0]), 
   lambda = -> (x, y, c) { curl(x, y, c) }, [OPTIONS[ARGV[0]], config["ROOT_URL"], config],
