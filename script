@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+
+ROOT_URL="https://api.omise.co"
+SKEY = %w(-u "skey_test_55xm609p758d1qscz38:")
+
+def transfer(url, options=[])
+  curl options.inject("#{url}/transfers ") {|k, v| k+v }
+end
+
+def curl(command)
+  puts "curl #{command}"
+end
+
+transfer ROOT_URL, SKEY
+
