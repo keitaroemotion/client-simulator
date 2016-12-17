@@ -4,11 +4,23 @@ require 'colorize'
 
 SKEY = %w(-u SKEY)
 POST = %w(-X POST)
+CURR_JPY = %w(-d "currency=jpy")
 CONFIG = "/usr/local/etc/clisim/config"
+
+def enlist_d(*args)
+  args.inject([]){ |x, y| x + ["-d", "\"#{y}\""] } 
+end
 
 OPTIONS = {
   "ltran" => ["transfers", SKEY],
-  "ctran" => ["transfers", SKEY + POST + %w(-d "amount=300")]
+  "ctran" => ["transfers", SKEY + POST + %w(-d "amount=300")],
+  "cchar" =>["charges", SKEY + POST + CURR_JPY +
+    enlist_d(
+      "description=Charge for order 3947",
+      "amount=100000",
+      "offsite=internet_banking_scb",
+      "return_uri=http://www.example.com/orders/3947/complete"
+    ) ]
 }
 
 # :
@@ -42,8 +54,10 @@ def curl(opt, url, config)
   system disp "curl "+ opt[1].inject("#{url}/#{opt[0]} ") {|k, v| "#{k}#{replace(v, config)} " }
 end
 
-def disp(command)
-  puts command.to_s.green
+def disp(command, regex=/(-[Xdu])/)
+  command.split(regex).each do |part|
+    print part.match(regex) ? "  #{part}".yellow : "#{part}\n".green
+  end
   command
 end
 
