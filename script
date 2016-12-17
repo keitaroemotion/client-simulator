@@ -37,10 +37,12 @@ def disp(command)
   command
 end
 
-def showError()
-  puts "\nYou need argument.\n".red
-  puts "[options]"
-  OPTIONS.merge("edit" => "").each {|option| puts "- #{option[0]}"}
+def showError(edit_result)
+  if edit_result == 1 
+    puts "\nYou need argument.\n".red
+    puts "[options]"
+    OPTIONS.merge("edit" => "").each {|option| puts "- #{option[0]}"}
+  end
 end
 
 def apply(condition, trueFunc, trueValues, falseFunc, falseValues)
@@ -52,15 +54,17 @@ def quit(function_call)
 end
 
 def edit()
-  ARGV[0] == "edit" ? system("vim /usr/local/etc/clisim/config") : showError()
+  if (ARGV[0] == "edit") 
+    system("vim /usr/local/etc/clisim/config") 
+    return 0
+  end
+  return 1
 end
 
 config = readConfig CONFIG
 
-quit edit
-
 apply(OPTIONS.keys.include?(ARGV[0]), 
   lambda = -> (x, y, c) { curl(x, y, c) }, [OPTIONS[ARGV[0]], config["ROOT_URL"], config],
-  lambda = -> () {showError()}, [])
+  lambda = -> () {showError(edit)}, [])
 
 
