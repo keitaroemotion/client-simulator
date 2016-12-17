@@ -1,5 +1,9 @@
 #!/usr/bin/env ruby
 
+#TODO CONVERT JSON TO CSV
+#TODO JSON TO EXCEL
+#TODO ADD MORE QUERY CONDITIONS
+
 require 'colorize'
 
 SKEY = %w(-u SKEY)
