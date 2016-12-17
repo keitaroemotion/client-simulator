@@ -1,15 +1,41 @@
 #!/usr/bin/env ruby
 
+require 'colorize'
+
 ROOT_URL="https://api.omise.co"
 SKEY = %w(-u "skey_test_55xm609p758d1qscz38:")
+POST = %w(-X POST)
+
+OPTIONS = {
+  "ltran" => ["transfers", SKEY],
+  "ctran" => ["transfers", SKEY + POST + %w(-d "amount=300")]
+}
 
 def transfer(url, options=[])
-  curl options.inject("#{url}/transfers ") {|k, v| k+v }
+  curl "transfers", options, url
 end
 
-def curl(command)
-  puts "curl #{command}"
+def curl(options, url)
+  system disp "curl "+ options[1].inject("#{url}/#{options[0]} ") {|k, v| "#{k}#{v} " }
 end
 
-transfer ROOT_URL, SKEY
+def disp(command)
+  puts command.green
+  command
+end
+
+def showError()
+  puts "\nYou need argument.\n".red
+  puts "[options]"
+  OPTIONS.each {|option| puts "- #{option[0]}"}
+end
+
+def apply(condition, trueFunc, trueValues, falseFunc, falseValues)
+   condition ? trueFunc.call(*trueValues) : falseFunc.call(*falseValues)
+end
+
+apply(OPTIONS.keys.include?(ARGV[0]), 
+      lambda = -> (x, y) { curl(x, y) }, [OPTIONS[ARGV[0]], ROOT_URL],
+      lambda = -> () {showError()}, [])
+
 
